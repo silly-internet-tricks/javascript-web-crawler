@@ -1,5 +1,22 @@
 const { JSDOM } = require("jsdom");
 
+const crawlPage = function crawlPage(url) {
+  fetch(url)
+    .then((response) => {
+      if (response.status >= 400) {
+        throw new Error(`got error code: ${response.status}`);
+      }
+
+      return response.text();
+    })
+    .then((pageText) => {
+      console.log(pageText.length);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 const getUrlsFromHtml = function getUrlsFromHtml(htmlBody, baseUrl) {
   const dom = new JSDOM(htmlBody);
   const nodes = dom.window.document.querySelectorAll("a");
@@ -43,4 +60,4 @@ const normalizeUrl = function normalizeUrl(inputUrl) {
     .toLocaleLowerCase();
 };
 
-module.exports = { normalizeUrl, getUrlsFromHtml };
+module.exports = { normalizeUrl, getUrlsFromHtml, crawlPage };
