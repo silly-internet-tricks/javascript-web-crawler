@@ -7,6 +7,17 @@ const crawlPage = function crawlPage(url) {
         throw new Error(`got error code: ${response.status}`);
       }
 
+      if (
+        !response.headers
+          .get("content-type")
+          .toLocaleLowerCase()
+          .startsWith("text/html")
+      ) {
+        throw new Error(
+          `got unsupported content type: ${response.headers.get("content-type")}`,
+        );
+      }
+
       return response.text();
     })
     .then((pageText) => {

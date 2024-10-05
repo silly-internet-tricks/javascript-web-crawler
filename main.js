@@ -1,5 +1,5 @@
 const { argv } = require("node:process");
-const { crawlPage } = require('./crawl');
+const { crawlPage } = require("./crawl");
 console.log("hello world");
 function main() {
   argv.forEach((val, index) => {
