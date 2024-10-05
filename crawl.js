@@ -1,5 +1,6 @@
 const normalizeUrl = function normalizeUrl(inputUrl) {
-    return inputUrl.trim()
+    return decodeURIComponent(inputUrl)
+        .trim()
         .replace(/^https?:\/\//i, '')
         .replace(/#.*/, '')
         .replace(/\?.*/, '')

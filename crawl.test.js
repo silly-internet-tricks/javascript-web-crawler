@@ -41,7 +41,9 @@ test('normalizes urls with fragments and query strings', () => {
         'boot.dev/path/to/resource?query=before-fragment#heading',
         'boot.dev/path/to/resource?heading=idk',
         'boot.dev/path/to/reSource?heading=first,footer=second,body=third',
+        'boot.dev/path/to/reSource?heading=first&footer=second&body=third',
         'boot.dev/path/to/resource?heading=first,footer=second,body=third#hash-fragment',
+        'boot.dev/path/to/resource?heading=first&footer=second&body=third#hash-fragment',
     ];
 
     urls.forEach((url) => {
@@ -61,3 +63,14 @@ test('normalizes urls with space padding', () => {
     });
 });
 
+test('normalizes urls which have uriencoded chars', () => {
+    const urls = [
+        'https://blog.boo%20oot.dev',
+        // for now I am going to say that this url should be decoded first, and then the https:// should be discarded
+        'https%3A%2F%2Fblog.boo%20oot.dev',
+    ];
+
+    urls.forEach((url) => {
+        expect(normalizeUrl(url)).toBe('blog.boo oot.dev');
+    });
+});
