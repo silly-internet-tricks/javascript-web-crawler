@@ -74,3 +74,21 @@ test('normalizes urls which have uriencoded chars', () => {
         expect(normalizeUrl(url)).toBe('blog.boo oot.dev');
     });
 });
+
+test('normalize url does not choke on obvious bad inputs', () => {
+    const urls = [
+        {},
+        [],
+        '',
+        undefined,
+        null,
+        true,
+        false,
+        0,
+        1,
+    ];
+    urls.forEach((url) => {
+        expect(normalizeUrl(url)).toBe('');
+    });
+});
+
