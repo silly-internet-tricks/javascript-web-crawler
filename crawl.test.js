@@ -33,3 +33,31 @@ test('normalizes urls with uppercase', () => {
     });
 });
 
+test('normalizes urls with fragments and query strings', () => {
+    const urls = [
+        'boot.dev/path/to/resource#heading',
+        'boot.dev/path/to/resource#heading-with-dashes',
+        'boot.dev/path/to/resource#heading?query=hello',
+        'boot.dev/path/to/resource?query=before-fragment#heading',
+        'boot.dev/path/to/resource?heading=idk',
+        'boot.dev/path/to/reSource?heading=first,footer=second,body=third',
+        'boot.dev/path/to/resource?heading=first,footer=second,body=third#hash-fragment',
+    ];
+
+    urls.forEach((url) => {
+        expect(normalizeUrl(url)).toBe('boot.dev/path/to/resource');
+    });
+});
+
+test('normalizes urls with space padding', () => {
+    const urls = [
+        'boot.dev        ',
+        '  boot.dev/',
+        '     https://boot.dev    ',
+    ];
+
+    urls.forEach((url) => {
+        expect(normalizeUrl(url)).toBe('boot.dev');
+    });
+});
+
