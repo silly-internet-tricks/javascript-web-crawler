@@ -8,3 +8,16 @@ test('adds 1 + 2 to equal 3', () => {
   expect(sum(1, 2)).toBe(3);
 });
 
+test('normalizes urls', () => {
+    const urls = [
+        'https://blog.boot.dev/path/',
+        'https://blog.boot.dev/path',
+        'http://blog.boot.dev/path/',
+        'http://blog.boot.dev/path',
+    ];
+
+    urls.forEach((url) => {
+        expect(normalizeUrl(url)).toBe('blog.boot.dev/path');
+    });
+});
+

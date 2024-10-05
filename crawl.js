@@ -1,5 +1,6 @@
-const normalizeURL = function normalizeUrl() {
+const normalizeUrl = function normalizeUrl(inputUrl) {
+    return inputUrl.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
 };
 
-module.exports = { normalizeURL };
+module.exports = { normalizeUrl };
 
