@@ -22,6 +22,9 @@ const crawlPage = function crawlPage(url) {
     })
     .then((pageText) => {
       console.log(pageText.length);
+      // I don't want to print the html because it's soooooo much
+      // but if I wanted to I could:
+      // console.log(pageText);
     })
     .catch((error) => {
       console.log(error);
