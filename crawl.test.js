@@ -21,3 +21,15 @@ test('normalizes urls', () => {
     });
 });
 
+test('normalizes urls with uppercase', () => {
+    const urls = [
+        'BLOG.BOOT.DEV',
+        'Blog.Boot.Dev/',
+        'bLoG.bOoT.dev',
+    ];
+
+    urls.forEach((url) => {
+        expect(normalizeUrl(url)).toBe('blog.boot.dev');
+    });
+});
+
