@@ -113,6 +113,29 @@ test("relative URLs are converted to absolute URLs", () => {
   expect(results).toEqual(expected);
 });
 
+test("relative urls get converted without doubling the slash when the base url has just a single slash path", () => {
+  const results = getUrlsFromHtml(
+    htmlTestBody,
+    "blog.boot.dev/path/to/current-page",
+  ).map(normalizeUrl);
+  // NOTE: I did not include the protocol on the front of the base url.
+  // I don't think it's necessary but I'm not positive
+
+  const expected = [
+    "blog.boot.dev",
+    "blog.boot.dev/relative/url",
+    "//google.com",
+    "blog.boot.dev/path/to/current-page/some/other/resource",
+    "blog.boot.dev/path/to/sibling/resource",
+    "blog.boot.dev/path/to/current-page",
+    "blog.boot.dev/path/cousin/resource",
+  ];
+
+  expect(results.length).toBe(expected.length);
+  expect(results).toEqual(expected);
+
+});
+
 test("can get domain part from url", () => {
     const urls = [
         'blog.boot.dev/hello-world',

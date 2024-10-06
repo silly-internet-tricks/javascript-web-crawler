@@ -34,7 +34,7 @@ const pages = {};
 
 const crawlPage = function crawlPage(baseUrl, currentUrl = baseUrl) {
   return new Promise((resolve, reject) => {
-    if (getDomainPartFromUrl(baseUrl) !== getDomainPartFromUrl(currentUrl)) {
+    if (getDomainPartFromUrl(normalizeUrl(baseUrl)) !== getDomainPartFromUrl(normalizeUrl(currentUrl))) {
       resolve();
     } else {
       const normalizedCurrentUrl = normalizeUrl(currentUrl);
@@ -43,7 +43,6 @@ const crawlPage = function crawlPage(baseUrl, currentUrl = baseUrl) {
         resolve();
       } else {
         pages[normalizedCurrentUrl] = 1;
-        console.log(JSON.stringify(pages));
         fetchHtml('https://' + normalizedCurrentUrl)
           .then((pageText) => {
             const urls = getUrlsFromHtml(pageText, baseUrl);
@@ -57,7 +56,7 @@ const crawlPage = function crawlPage(baseUrl, currentUrl = baseUrl) {
           })
           .catch((error) => {
             console.log(error.message);
-            reject(error);
+            resolve();
           });
       }
     }
@@ -110,6 +109,7 @@ const normalizeUrl = function normalizeUrl(inputUrl) {
     .replace(/#.*/, "")
     .replace(/\?.*/, "")
     .replace(/\/+$/, "")
+    .replace(/\/\/+/, '/')
     .toLocaleLowerCase();
 };
 
