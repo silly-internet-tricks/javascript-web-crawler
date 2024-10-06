@@ -1,5 +1,5 @@
 const { argv } = require("node:process");
-const { crawlPage } = require("./crawl");
+const { crawlPage, pages } = require("./crawl");
 console.log("hello world");
 function main() {
   argv.forEach((val, index) => {
@@ -13,7 +13,9 @@ function main() {
     console.log("no more than one command line argument is allowed");
   } else {
     console.log(`starting crawl! Beginning with: ${args[0]}`);
-    crawlPage(args[0]);
+    crawlPage(args[0]).then(() => {
+      console.log(pages);
+    });
   }
 }
 

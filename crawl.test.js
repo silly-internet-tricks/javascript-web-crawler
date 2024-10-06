@@ -1,6 +1,6 @@
 const { test, expect } = require("@jest/globals");
 
-const { normalizeUrl, getUrlsFromHtml } = require("./crawl.js");
+const { normalizeUrl, getUrlsFromHtml, getDomainPartFromUrl } = require("./crawl.js");
 
 const sum = (a, b) => a + b;
 
@@ -112,3 +112,20 @@ test("relative URLs are converted to absolute URLs", () => {
   expect(results.length).toBe(expected.length);
   expect(results).toEqual(expected);
 });
+
+test("can get domain part from url", () => {
+    const urls = [
+        'blog.boot.dev/hello-world',
+        'https://github.com/something',
+    ];
+
+    const expectedDomains = [
+        'blog.boot.dev',
+        'https://github.com',
+    ];
+
+    urls.forEach((url, i) => {
+        expect(getDomainPartFromUrl(url)).toBe(expectedDomains[i]);
+    });
+});
+

@@ -1,37 +1,77 @@
 const { JSDOM } = require("jsdom");
 
-const crawlPage = function crawlPage(url) {
-  fetch(url)
-    .then((response) => {
-      if (response.status >= 400) {
-        throw new Error(`got error code: ${response.status}`);
-      }
+const fetchHtml = function fetchHtml(url) {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error(`got error code: ${response.status}`);
+        }
 
-      if (
-        !response.headers
-          .get("content-type")
-          .toLocaleLowerCase()
-          .startsWith("text/html")
-      ) {
-        throw new Error(
-          `got unsupported content type: ${response.headers.get("content-type")}`,
-        );
-      }
+        if (
+          !response.headers
+            .get("content-type")
+            .toLocaleLowerCase()
+            .startsWith("text/html")
+        ) {
+          throw new Error(
+            `got unsupported content type: ${response.headers.get("content-type")}`,
+          );
+        }
 
-      return response.text();
-    })
-    .then((pageText) => {
-      console.log(pageText.length);
-      // I don't want to print the html because it's soooooo much
-      // but if I wanted to I could:
-      // console.log(pageText);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+        return response.text();
+      })
+      .then((pageText) => {
+        resolve(pageText);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+const pages = {};
+
+const crawlPage = function crawlPage(baseUrl, currentUrl = baseUrl) {
+  return new Promise((resolve, reject) => {
+    if (getDomainPartFromUrl(baseUrl) !== getDomainPartFromUrl(currentUrl)) {
+      resolve();
+    } else {
+      const normalizedCurrentUrl = normalizeUrl(currentUrl);
+      if (normalizedCurrentUrl in pages) {
+        pages[normalizedCurrentUrl]++;
+        resolve();
+      } else {
+        pages[normalizedCurrentUrl] = 1;
+        console.log(JSON.stringify(pages));
+        fetchHtml('https://' + normalizedCurrentUrl)
+          .then((pageText) => {
+            const urls = getUrlsFromHtml(pageText, baseUrl);
+            Promise.all(
+              urls.map((url) => {
+                return crawlPage(baseUrl, url);
+              }),
+            ).then(() => {
+              resolve();
+            });
+          })
+          .catch((error) => {
+            console.log(error.message);
+            reject(error);
+          });
+      }
+    }
+  });
+};
+
+const getDomainPartFromUrl = function getDomainPartFromUrl(url) {
+  const domainMatch = url.match(/^(.*?[^\/])\/[^\/]/);
+  const domainPart = domainMatch ? domainMatch[1] : url;
+  return domainPart;
 };
 
 const getUrlsFromHtml = function getUrlsFromHtml(htmlBody, baseUrl) {
+  if (!baseUrl) throw 'base url is required!';
   const dom = new JSDOM(htmlBody);
   const nodes = dom.window.document.querySelectorAll("a");
   const hrefs = [...nodes].map((node) => node.href);
@@ -39,8 +79,7 @@ const getUrlsFromHtml = function getUrlsFromHtml(htmlBody, baseUrl) {
     if (!href.match(/^(https?:)?\/\//i)) {
       if (href.match(/^about:blank#/i)) return baseUrl;
       if (href.match(/^\/[^\/]/)) {
-        const domainMatch = baseUrl.match(/^(.*?)\/[^\/]/);
-        const domainPart = domainMatch ? domainMatch[1] : baseUrl;
+        const domainPart = getDomainPartFromUrl(baseUrl);
         return `${domainPart}${href}`;
       }
 
@@ -74,4 +113,4 @@ const normalizeUrl = function normalizeUrl(inputUrl) {
     .toLocaleLowerCase();
 };
 
-module.exports = { normalizeUrl, getUrlsFromHtml, crawlPage };
+module.exports = { normalizeUrl, getUrlsFromHtml, crawlPage, pages, getDomainPartFromUrl };
