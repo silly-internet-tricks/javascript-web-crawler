@@ -1,5 +1,6 @@
 const { argv } = require("node:process");
 const { crawlPage, pages } = require("./crawl");
+const { printReport } = require('./report');
 console.log("hello world");
 function main() {
   argv.forEach((val, index) => {
@@ -14,7 +15,7 @@ function main() {
   } else {
     console.log(`starting crawl! Beginning with: ${args[0]}`);
     crawlPage(args[0]).then(() => {
-      console.log(pages);
+        printReport(pages);
     });
   }
 }
